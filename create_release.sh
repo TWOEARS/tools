@@ -14,12 +14,21 @@ WP2_REPO="https://github.com/TWOEARS/auditory-front-end"
 WP3_REPO="https://github.com/TWOEARS/blackboard-system"
 IDTRAIN_REPO="https://github.com/TWOEARS/identification-training-pipeline"
 EXAMPLES_REPO="https://github.com/TWOEARS/examples"
+# Version of development repos to use
+VERSION="master"
+function checkout {
+    cd $1
+    git checkout $VERSION
+    cd -
+}
 
 # --- Get actual release repo
+rm -rf twoears-release
 git clone $RELEASE_REPO twoears-release
 
 # --- Fetch Main and apply changes
 git clone $MAIN_REPO twoears-main
+checkout twoears-main
 rm -rf twoears-release/Tools
 cp twoears-main/LICENSE         twoears-release/LICENSE
 cp twoears-main/README.md       twoears-release/README.md
@@ -29,28 +38,33 @@ rm -rf twoears-main
 
 # --- Fetch Binaural simulator and apply changes
 git clone $WP1_REPO twoears-wp1
+checkout twoears-wp1
 git clone $SSR_REPO twoears-ssr
 cd twoears-ssr
 git checkout win64
 cd ..
-git clone $SOFA_REPO twoears-sofa
 rm -rf twoears-release/BinauralSimulator/src
 rm -rf twoears-release/BinauralSimulator/examples
 cp -R twoears-wp1/src                   twoears-release/BinauralSimulator/src
 cp -R twoears-wp1/doc/examples          twoears-release/BinauralSimulator/examples
 cp -R twoears-ssr/3rdparty/win64/bin    twoears-release/BinauralSimulator/src/mex/dll
-cp -R twoears-sofa/API_MO               twoears-release/BinauralSimulator/src/sofa
-rm -rf twoears-release/BinauralSimulator/src/sofa/converters
-rm -rf twoears-release/BinauralSimulator/src/sofa/demos
-rm -rf twoears-release/BinauralSimulator/src/sofa/test
-rm twoears-release/BinauralSimulator/src/sofa/history.txt
-rm twoears-release/BinauralSimulator/src/sofa/readme.txt
 rm -rf twoears-wp1
 rm -rf twoears-ssr
+
+# --- Fetch SOFA and apply changes
+git clone $SOFA_REPO twoears-sofa
+checkout twoears-sofa
+rm -rf twoears-release/SOFA
+mkdir twoears-release/SOFA
+cp -R twoears-sofa/API_MO twoears-release/SOFA/API_MO
+rm -rf twoears-release/SOFA/API_MO/test
+rm twoears-release/SOFA/API_MO/history.txt
+rm twoears-release/SOFA/API_MO/readme.txt
 rm -rf twoears-sofa
 
 # --- Fetch Auditory front-end and apply changes
 git clone $WP2_REPO twoears-wp2
+checkout twoears-wp2
 rm -rf twoears-release/AuditoryFrontEnd/*
 cp -R twoears-wp2/src                   twoears-release/AuditoryFrontEnd/src
 cp -R twoears-wp2/test                  twoears-release/AuditoryFrontEnd/test
@@ -60,6 +74,7 @@ rm -rf twoears-wp2
 
 # --- Fetch Blackboard system and apply changes
 git clone $WP3_REPO twoears-wp3
+checkout twoears-wp3
 rm -rf twoears-release/BlackboardSystem/*
 cp -r twoears-wp3/src                   twoears-release/BlackboardSystem/src
 cp twoears-wp3/BlackboardSystem.xml     twoears-release/BlackboardSystem/BlackboardSystem.xml
@@ -68,6 +83,7 @@ rm -rf twoears-wp3
 
 # --- Fetch Identification-Training-Pipeline and apply changes
 git clone $IDTRAIN_REPO twoears-id-train
+checkout twoears-id-train
 rm -rf twoears-release/IdentificationTraining/src
 rm -rf twoears-release/IdentificationTraining/third_party_software
 cp -R twoears-id-train/src                      twoears-release/IdentificationTraining/src
@@ -82,7 +98,12 @@ rm -rf twoears-id-train
 
 # --- Fetch examples and apply changes
 git clone $EXAMPLES_REPO twoears-examples
+checkout twoears-examples
 rm -rf twoears-release/examples/*
 cp -R twoears-examples/* twoears-release/examples/
 rm twoears-release/examples/README.md
+# Remove all Config.xml entries (they are only used for development)
+find twoears-release/examples -type f -name "Config.xml" -exec rm -f {} \;
+# Remove the corresponding startTwoEars("Config.xml") lines from the scripts
+find twoears-release/examples -type f -name "*.m" -print0 | xargs -0 sed -i '/startTwoEars/d'
 rm -rf twoears-examples
