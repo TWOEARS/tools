@@ -50,6 +50,8 @@ rm -rf twoears-main
 #cp -R twoears-ssr/3rdparty/win64/bin    twoears-release/BinauralSimulator/src/mex/dll
 #rm -rf twoears-wp1
 #rm -rf twoears-ssr
+# Update database version
+sed -i -e 's/master/v1.3/' twoears-release/BinauralSimulator/src/+xml/dbURL.m
 
 # --- Fetch SOFA and apply changes (stay with 1.2)
 #git clone $SOFA_REPO twoears-sofa
