@@ -12,7 +12,10 @@ SSR_REPO="https://github.com/TWOEARS/twoears-ssr"
 SOFA_REPO="https://github.com/TWOEARS/SOFA"
 WP2_REPO="https://github.com/TWOEARS/auditory-front-end"
 WP3_REPO="https://github.com/TWOEARS/blackboard-system"
-IDTRAIN_REPO="https://github.com/TWOEARS/identification-training-pipeline"
+AMLTTP_REPO="https://github.com/TWOEARS/Auditory-Machine-Learning-Training-and-Testing-Pipeline"
+AUDIOSTREAM_REPO="https://github.com/TWOEARS/audio-stream-server"
+OPENAFE_REPO="https://github.com/TWOEARS/openAFE"
+ROSAFE_REPO="https://github.com/TWOEARS/rosAFE"
 EXAMPLES_REPO="https://github.com/TWOEARS/examples"
 # Version of development repos to use
 VERSION="master"
@@ -81,27 +84,59 @@ cp twoears-wp3/BlackboardSystem.xml     twoears-release/BlackboardSystem/Blackbo
 cp twoears-wp3/startBlackboardSystem.m  twoears-release/BlackboardSystem/startBlackboardSystem.m
 rm -rf twoears-wp3
 
-# --- Fetch Identification-Training-Pipeline and apply changes
-git clone $IDTRAIN_REPO twoears-id-train
-checkout twoears-id-train
-rm -rf twoears-release/IdentificationTraining/src
-rm -rf twoears-release/IdentificationTraining/third_party_software
-cp -R twoears-id-train/src                      twoears-release/IdentificationTraining/src
-cp -R twoears-id-train/third_party_software     twoears-release/IdentificationTraining/third_party_software
-cp twoears-id-train/IdentificationTraining.xml  twoears-release/IdentificationTraining/IdentificationTraining.xml
-# FIXME: startIdentificationTraining from twoears-id-train cannot be used at the
-# moment
-rm -rf twoears-id-train
+# --- Fetch Auditory Machine Learning Training and Testing Pipeline and apply changes
+git clone $AMLTTP_REPO twoears-amlttp
+checkout twoears-amlttp
+rm -rf twoears-release/AuditoryMachineLearningTrainingTestingPipeline/src
+rm -rf twoears-release/AuditoryMachineLearningTrainingTestingPipeline/third_party_software
+cp -R twoears-amlttp/src twoears-release/AuditoryMachineLearningTrainingTestingPipeline/src
+cp -R twoears-amlttp/third_party_software twoears-release/AuditoryMachineLearningTrainingTestingPipeline/third_party_software
+cp twoears-amlttp/startAMLTTP.m  twoears-release/AuditoryMachineLearningTrainingTestingPipeline/startAMLTTP.m
+cp twoears-amlttp/AMLTTP.xml twoears-release/AuditoryMachineLearningTrainingTestingPipeline/AMLTTP.xml
+rm -rf twoears-amlttp
 
 # --- Fetch Robotic platform and apply changes
-# FIXME: this has to be updated
+rm -rf twoears-release/RoboticPlatform
+# --- Fetch Audio Stream Server and apply changes 
+git clone $AUDIOSTREAM_REPO twoears-audio-stream-server
+checkout twoears-audio-stream-server
+cp -R twoears-audio-stream-server/basc-genom3 twoears-release/RoboticPlatform/
+cp -R twoears-audio-stream-server/bass-genom3 twoears-release/RoboticPlatform/
+rm -rf twoears-audio-stream-server
+# --- Fetch openAFE and apply
+git clone $OPENAFE_REPO twoears-openafe
+cp -R twoears-openafe twoears-release/RoboticPlatform/openAFE
+rm twoears-release/RoboticPlatform/openAFE/.gitignore
+rm -rf twoears-release/RoboticPlatform/openAFE/.git
+rm -rf twoears-openafe
+# --- Fetch rosAFE and apply
+git clone $ROSAFE_REPO twoears-rosafe
+cp -R twoears-rosafe twoears-release/RoboticPlatform/rosAFE
+rm twoears-release/RoboticPlatform/rosAFE/.gitignore
+rm -rf twoears-release/RoboticPlatform/rosAFE/.git
+rm -rf twoears-rosafe
 
 # --- Fetch examples and apply changes
 git clone $EXAMPLES_REPO twoears-examples
 checkout twoears-examples
 rm -rf twoears-release/examples/*
-cp -R twoears-examples/* twoears-release/examples/
-rm twoears-release/examples/README.md
+# Include only examples with documentation
+# http://docs.twoears.eu/en/latest/examples/localisation/
+cp -R twoears-examples/localisation_w_and_wo_head_movements twoears-release/examples/
+# http://docs.twoears.eu/en/latest/examples/localisation-details/
+cp -R twoears-examples/localisation_look_at_details twoears-release/examples/
+# http://docs.twoears.eu/en/latest/examples/dnn-localisation/
+cp -R twoears-examples/localisation_DNNs twoears-release/examples/
+# http://docs.twoears.eu/en/latest/examples/gmm-localisation/
+cp -R twoears-examples/localisation_GMMs twoears-release/examples/
+# http://docs.twoears.eu/en/latest/examples/train-identification/
+cp -R twoears-examples/train_identification_model twoears-release/examples/
+# http://docs.twoears.eu/en/latest/examples/identification/
+cp -R twoears-examples/identification twoears-release/examples/
+# http://docs.twoears.eu/en/latest/examples/qoe-coloration/
+cp -R twoears-examples/qoe_coloration twoears-release/examples/
+# http://docs.twoears.eu/en/latest/examples/qoe-localisation/
+cp -R twoears-examples/qoe_localisation twoears-release/examples/
 # Remove all Config.xml entries (they are only used for development)
 find twoears-release/examples -type f -name "Config.xml" -exec rm -f {} \;
 # Remove the corresponding startTwoEars("Config.xml") lines from the scripts
