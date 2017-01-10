@@ -93,6 +93,7 @@ cp -R twoears-amlttp/src twoears-release/AuditoryMachineLearningTrainingTestingP
 cp -R twoears-amlttp/third_party_software twoears-release/AuditoryMachineLearningTrainingTestingPipeline/third_party_software
 cp twoears-amlttp/startAMLTTP.m  twoears-release/AuditoryMachineLearningTrainingTestingPipeline/startAMLTTP.m
 cp twoears-amlttp/AMLTTP.xml twoears-release/AuditoryMachineLearningTrainingTestingPipeline/AMLTTP.xml
+cp twoears-amlttp/LICENSE twoears-release/AuditoryMachineLearningTrainingTestingPipeline/LICENSE
 rm -rf twoears-amlttp
 
 # --- Fetch Robotic platform and apply changes
@@ -100,6 +101,7 @@ rm -rf twoears-release/RoboticPlatform
 # --- Fetch Audio Stream Server and apply changes 
 git clone $AUDIOSTREAM_REPO twoears-audio-stream-server
 checkout twoears-audio-stream-server
+mkdir twoears-release/RoboticPlatform
 cp -R twoears-audio-stream-server/basc-genom3 twoears-release/RoboticPlatform/
 cp -R twoears-audio-stream-server/bass-genom3 twoears-release/RoboticPlatform/
 rm -rf twoears-audio-stream-server
